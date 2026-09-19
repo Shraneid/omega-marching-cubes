@@ -122,20 +122,19 @@ const torusSdf = (position: [number, number, number]) => {
     }
 }
 
-const verts: number[] = [];
-const scale = 100;
-pushTriangles(torusSdf, scale, verts);
-
 // VERTEX DATA
-const vertices = new Float32Array(verts);
+let verts: number[] = [];
+let scale = 4;
+// pushTriangles(torusSdf, scale, verts);
+let vertices = new Float32Array(verts);
 // END VERTEX DATA
 
 // BUFFERS
 const vertexBuffer = device.createBuffer({
-    size: vertices.byteLength,
+    size: 1000000 * 8,
     usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.VERTEX,
 });
-device.queue.writeBuffer(vertexBuffer, 0, vertices);
+// device.queue.writeBuffer(vertexBuffer, 0, vertices);
 
 const uniformBuffer = device.createBuffer({
     label: "Uniform Buffer",
@@ -311,6 +310,15 @@ const render = (deltaTime: number, elapsedTime: number) => {
         144,
         new Float32Array([deltaTime / 1000, elapsedTime]),
     );
+
+    // UPDATE VERTEX BUFFER
+    scale = Math.min(4 + Math.floor(elapsedTime / 1000 * 20), 200);
+    verts = [];
+    pushTriangles(torusSdf, scale, verts);
+    vertices = new Float32Array(verts);
+
+    device.queue.writeBuffer(vertexBuffer, 0, vertices);
+    // END UPDATE VERTEX BUFFER
 
     // RENDER PASS
     // @ts-ignore
