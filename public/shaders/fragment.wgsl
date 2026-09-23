@@ -21,7 +21,7 @@ struct VertexOut {
 fn fs(in: VertexOut) -> @location(0) vec4f {
     let norm = normalize(cross(dpdy(in.worldPos), dpdx(in.worldPos)));
 
-    const lightDir = normalize(vec3(-3, -.5, 1));
+    const lightDir = normalize(vec3(3, 2.5, -1));
     const lightColor = vec3(1);
     const objectColor = vec3(1, 0.1, .1);
 
