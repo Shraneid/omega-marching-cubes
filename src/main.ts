@@ -2,7 +2,9 @@ import { mat4LookAt, mat4Perspective } from "./helper.ts";
 import { pushTriangles } from "./cubeMarch.ts";
 import { controls, MIN_SCALE } from "./controls.ts";
 
-new WebSocket(`ws://${location.host}/_reload`).onmessage = () => location.reload();
+if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+    new WebSocket(`ws://${location.host}/_reload`).onmessage = () => location.reload();
+}
 
 let startTime: number;
 let lastFrameTime: number;
@@ -91,8 +93,8 @@ const loadShaderModule = async (path: string): Promise<GPUShaderModule> => {
     return module;
 };
 
-const vertexShader = await loadShaderModule("/shaders/vertex.wgsl");
-const fragmentShader = await loadShaderModule("/shaders/fragment.wgsl");
+const vertexShader = await loadShaderModule("shaders/vertex.wgsl");
+const fragmentShader = await loadShaderModule("shaders/fragment.wgsl");
 // END LOAD SHADERS
 
 // VERTEX DATA

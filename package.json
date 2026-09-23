@@ -4,6 +4,8 @@
     "type": "module",
     "private": true,
     "scripts": {
+        "dev": "bun run index.ts",
+        "build": "rm -rf docs && bun build ./index.html --outdir=docs --minify && cp -r public/* docs/ && touch docs/.nojekyll",
         "format": "prettier --write .",
         "format:check": "prettier --check ."
     },
