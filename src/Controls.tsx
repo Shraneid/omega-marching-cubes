@@ -51,48 +51,56 @@ export const Controls = () => {
     };
 
     return (
-        <div style={panelStyle}>
-            <div style={rowStyle}>
-                <label>max scale</label>
-                <input
-                    type="range"
-                    min={MIN_SCALE}
-                    max={MAX_SCALE}
-                    step={1}
-                    value={maxScale}
-                    onChange={(e) => updateScale(e.target.valueAsNumber)}
+        <>
+            <div style={panelStyle}>
+                <div style={rowStyle}>
+                    <label>max scale</label>
+                    <input
+                        type="range"
+                        min={MIN_SCALE}
+                        max={MAX_SCALE}
+                        step={1}
+                        value={maxScale}
+                        onChange={(e) => updateScale(e.target.valueAsNumber)}
+                    />
+                    <input
+                        type="number"
+                        min={MIN_SCALE}
+                        max={MAX_SCALE}
+                        step={1}
+                        value={maxScale}
+                        style={{ width: "4em" }}
+                        onChange={(e) => updateScale(e.target.valueAsNumber)}
+                    />
+                </div>
+                <div style={rowStyle}>
+                    <span>presets:</span>
+                    {SDF_PRESETS.map((preset) => (
+                        <button key={preset.name} onClick={() => setSource(preset.source)}>
+                            {preset.name}
+                        </button>
+                    ))}
+                </div>
+                <label>sdf (position) =&gt; number</label>
+                <textarea
+                    value={source}
+                    onChange={(e) => setSource(e.target.value)}
+                    spellCheck={false}
+                    rows={6}
+                    style={{ width: "24em", fontFamily: "monospace", fontSize: 12 }}
                 />
-                <input
-                    type="number"
-                    min={MIN_SCALE}
-                    max={MAX_SCALE}
-                    step={1}
-                    value={maxScale}
-                    style={{ width: "4em" }}
-                    onChange={(e) => updateScale(e.target.valueAsNumber)}
-                />
+                <button onClick={evaluate}>evaluate</button>
+                {error && <div style={{ color: "#ff6b6b", maxWidth: "24em" }}>{error}</div>}
+                <p>
+                    To find more functions:{" "}
+                    <a href={`https://iquilezles.org/articles/distfunctions/`}>visit this site</a>
+                </p>
+                <p>
+                    (only position is an input to the function,
+                    <br />
+                    you have to hardcode the rest)
+                </p>
             </div>
-
-            <div style={rowStyle}>
-                <span>presets:</span>
-                {SDF_PRESETS.map((preset) => (
-                    <button key={preset.name} onClick={() => setSource(preset.source)}>
-                        {preset.name}
-                    </button>
-                ))}
-            </div>
-
-            <label>sdf (position) =&gt; number</label>
-            <textarea
-                value={source}
-                onChange={(e) => setSource(e.target.value)}
-                spellCheck={false}
-                rows={6}
-                style={{ width: "24em", fontFamily: "monospace", fontSize: 12 }}
-            />
-
-            <button onClick={evaluate}>evaluate</button>
-            {error && <div style={{ color: "#ff6b6b", maxWidth: "24em" }}>{error}</div>}
-        </div>
+        </>
     );
 };
