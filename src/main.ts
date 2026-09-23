@@ -117,8 +117,8 @@ const torusSdf = (position: [number, number, number]) => {
 
 // VERTEX DATA
 let verts: number[] = [];
-let scale = 4;
-// pushTriangles(torusSdf, scale, verts);
+let scale = 0;
+let oldScale = 0;
 let vertices = new Float32Array(verts);
 // END VERTEX DATA
 
@@ -296,11 +296,14 @@ const render = (deltaTime: number, elapsedTime: number) => {
 
     // UPDATE VERTEX BUFFER
     scale = Math.min(4 + Math.floor((elapsedTime / 1000) * 20), 50);
-    verts = [];
-    pushTriangles(torusSdf, scale, verts);
-    vertices = new Float32Array(verts);
+    if (oldScale !== scale) {
+        oldScale = scale;
+        verts = [];
+        pushTriangles(torusSdf, scale, verts);
+        vertices = new Float32Array(verts);
 
-    device.queue.writeBuffer(vertexBuffer, 0, vertices);
+        device.queue.writeBuffer(vertexBuffer, 0, vertices);
+    }
     // END UPDATE VERTEX BUFFER
 
     // RENDER PASS
