@@ -1,37 +1,40 @@
 export const pushTriangles = (
     densityFunction: (position: [number, number, number]) => number,
     scale: number,
-    vertices: number[]
+    vertices: number[],
 ) => {
     const stepSize = 2 / scale;
-    for (let k = -1; k < 0.99; k += stepSize){
-        for (let j = -1; j < 0.99; j += stepSize){
-            for (let i = -1; i < 0.99; i += stepSize){
-                const {index: cornerIndex, corners: cornerDensities} = getIndex(
+    for (let k = -1; k < 0.99; k += stepSize) {
+        for (let j = -1; j < 0.99; j += stepSize) {
+            for (let i = -1; i < 0.99; i += stepSize) {
+                const { index: cornerIndex, corners: cornerDensities } = getIndex(
                     densityFunction,
                     i,
                     j,
                     k,
-                    stepSize
+                    stepSize,
                 );
                 // const edgeIndex = getEdgeIndex(cornerIndex);
                 const edges = getTris(cornerIndex);
 
-                for (let edgeId of edges){
+                for (let edgeId of edges) {
                     if (edgeId === -1) break;
                     let debugVertex = edgeToPositionLookup[edgeId];
 
                     const corners = edgeToCornersLookup[edgeId];
                     const cornerIndex1 = corners[0];
                     const cornerIndex2 = corners[1];
-                    const [vertex1, vertex2] = [cornersLookup[cornerIndex1], cornersLookup[cornerIndex2]];
+                    const [vertex1, vertex2] = [
+                        cornersLookup[cornerIndex1],
+                        cornersLookup[cornerIndex2],
+                    ];
 
                     const density1 = cornerDensities[cornerIndex1];
                     const density2 = cornerDensities[cornerIndex2];
 
                     let vertex = lerpVertices(vertex1, vertex2, density1, density2);
                     // let vertex = lerpVertices(vertex1, vertex2, -0.2, 0.2);
-                    vertex = [(vertex[0] + 1) / 2,(vertex[1] + 1) / 2,(vertex[2] + 1) / 2,] // remap from [-1, 1] to [0, 1]
+                    vertex = [(vertex[0] + 1) / 2, (vertex[1] + 1) / 2, (vertex[2] + 1) / 2]; // remap from [-1, 1] to [0, 1]
                     vertex = mapVertex(vertex, [i, j, k], stepSize);
                     // console.log(vertex);
                     vertices.push(vertex[0], vertex[1], vertex[2]);
@@ -39,22 +42,26 @@ export const pushTriangles = (
             }
         }
     }
-}
+};
 
-const mapVertex = (vertex: [number, number, number], cubePosition: [number, number, number], stepSize: number): [number, number, number] => {
+const mapVertex = (
+    vertex: [number, number, number],
+    cubePosition: [number, number, number],
+    stepSize: number,
+): [number, number, number] => {
     return [
         cubePosition[0] + vertex[0] * stepSize,
         cubePosition[1] + vertex[1] * stepSize,
         cubePosition[2] + vertex[2] * stepSize,
     ];
-}
+};
 
 const getIndex = (
     densityFunction: (position: [number, number, number]) => number,
     xMinus: number,
     yMinus: number,
     zMinus: number,
-    step: number
+    step: number,
 ) => {
     const xPlus = xMinus + step;
     const yPlus = yMinus + step;
@@ -95,10 +102,10 @@ const getIndex = (
             topLeftZminusCorner,
             topRightZminusCorner,
             topRightZplusCorner,
-            topLeftZplusCorner
-        ]
+            topLeftZplusCorner,
+        ],
     };
-}
+};
 
 // const edgeTable = [
 //         0x0  , 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,
@@ -394,12 +401,12 @@ const triTable = [
     [1, 3, 8, 9, 1, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
     [0, 9, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
     [0, 3, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
 ];
 
 const getTris = (edgeIndex: number) => {
     return triTable[edgeIndex];
-}
+};
 
 const edgeToPositionLookup: [number, number, number][] = [
     [0.5, 0, 0],
@@ -428,7 +435,7 @@ const edgeToCornersLookup = [
     [0, 4],
     [1, 5],
     [2, 6],
-    [3, 7]
+    [3, 7],
 ];
 
 const cornersLookup: [number, number, number][] = [
@@ -442,7 +449,12 @@ const cornersLookup: [number, number, number][] = [
     [-1, 1, 1],
 ];
 
-const lerpVertices = (vertex1: [number, number, number], vertex2: [number, number, number], weight1: number, weight2: number): [number, number, number] => {
+const lerpVertices = (
+    vertex1: [number, number, number],
+    vertex2: [number, number, number],
+    weight1: number,
+    weight2: number,
+): [number, number, number] => {
     let w1 = Math.abs(weight1);
     let w2 = Math.abs(weight2);
 

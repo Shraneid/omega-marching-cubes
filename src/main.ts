@@ -1,5 +1,5 @@
-import {mat4LookAt, mat4Perspective} from "./helper.ts";
-import {pushTriangles} from "./cubeMarch.ts";
+import { mat4LookAt, mat4Perspective } from "./helper.ts";
+import { pushTriangles } from "./cubeMarch.ts";
 
 new WebSocket(`ws://${location.host}/_reload`).onmessage = () => location.reload();
 
@@ -7,9 +7,7 @@ let startTime: number;
 let lastFrameTime: number;
 
 // getting the HTML canvas
-const canvas: HTMLCanvasElement = document.getElementById(
-    "GLCanvas",
-)! as HTMLCanvasElement;
+const canvas: HTMLCanvasElement = document.getElementById("GLCanvas")! as HTMLCanvasElement;
 
 // MAIN SETUP FOR RENDERING
 const adapter = await navigator.gpu?.requestAdapter();
@@ -68,7 +66,7 @@ const getTexture = async (path: string, label: string) => {
 const loadWGSL = async (path: string) => {
     const response = await fetch(path, { cache: "no-store" });
     if (!response.ok) {
-        console.log(response)
+        console.log(response);
         throw new Error(`Failed to load shader: ${path}`);
     }
     return response.text();
@@ -82,16 +80,11 @@ const loadShaderModule = async (path: string): Promise<GPUShaderModule> => {
     const errors = info.messages.filter((m) => m.type === "error");
     if (errors.length > 0) {
         for (const m of errors) {
-            console.error(
-                `%c${path}:${m.lineNum}:${m.linePos} ${m.message}`,
-                "color:#ff5555",
-            );
+            console.error(`%c${path}:${m.lineNum}:${m.linePos} ${m.message}`, "color:#ff5555");
         }
         throw new Error(
             `Shader compilation failed in ${path}:\n` +
-            errors
-                .map((m) => `  ${m.lineNum}:${m.linePos} ${m.message}`)
-                .join("\n"),
+                errors.map((m) => `  ${m.lineNum}:${m.linePos} ${m.message}`).join("\n"),
         );
     }
     return module;
@@ -103,24 +96,24 @@ const fragmentShader = await loadShaderModule("/shaders/fragment.wgsl");
 
 const length = (position: number[]) => {
     let sum = 0;
-    for (const p of position){
+    for (const p of position) {
         sum += p ** 2;
     }
     return Math.sqrt(sum);
-}
+};
 
 const sphereSdf = (position: [number, number, number]) => {
     const radius = 1;
     return length(position) - radius;
-}
+};
 
 const torusSdf = (position: [number, number, number]) => {
     {
-        const t = [ 0.5, 0.25 ];
-        const q = [length([position[0], position[2]])-t[0], position[1]];
-        return length(q)-t[1];
+        const t = [0.5, 0.25];
+        const q = [length([position[0], position[2]]) - t[0], position[1]];
+        return length(q) - t[1];
     }
-}
+};
 
 // VERTEX DATA
 let verts: number[] = [];
@@ -275,9 +268,7 @@ const renderPassDescriptor = {
 
 // RENDER
 const render = (deltaTime: number, elapsedTime: number) => {
-    renderPassDescriptor.colorAttachments[0].view = context
-        .getCurrentTexture()
-        .createView();
+    renderPassDescriptor.colorAttachments[0].view = context.getCurrentTexture().createView();
 
     const encoder = device.createCommandEncoder({ label: "command encoder" });
 
@@ -300,19 +291,11 @@ const render = (deltaTime: number, elapsedTime: number) => {
     // UNIFORMS
     device.queue.writeBuffer(uniformBuffer, 0, view);
     device.queue.writeBuffer(uniformBuffer, 64, projection);
-    device.queue.writeBuffer(
-        uniformBuffer,
-        128,
-        new Float32Array([...cameraPos, 0]),
-    );
-    device.queue.writeBuffer(
-        uniformBuffer,
-        144,
-        new Float32Array([deltaTime / 1000, elapsedTime]),
-    );
+    device.queue.writeBuffer(uniformBuffer, 128, new Float32Array([...cameraPos, 0]));
+    device.queue.writeBuffer(uniformBuffer, 144, new Float32Array([deltaTime / 1000, elapsedTime]));
 
     // UPDATE VERTEX BUFFER
-    scale = Math.min(4 + Math.floor(elapsedTime / 1000 * 20), 50);
+    scale = Math.min(4 + Math.floor((elapsedTime / 1000) * 20), 50);
     verts = [];
     pushTriangles(torusSdf, scale, verts);
     vertices = new Float32Array(verts);
