@@ -109,11 +109,9 @@ const sphereSdf = (position: [number, number, number]) => {
 };
 
 const torusSdf = (position: [number, number, number]) => {
-    {
-        const t = [0.5, 0.25];
-        const q = [length([position[0], position[2]]) - t[0], position[1]];
-        return length(q) - t[1];
-    }
+    const t = [0.5, 0.25];
+    const q = [length([position[0], position[2]]) - t[0], position[1]];
+    return length(q) - t[1];
 };
 
 // VERTEX DATA
