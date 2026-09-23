@@ -1,5 +1,6 @@
 import { mat4LookAt, mat4Perspective } from "./helper.ts";
 import { pushTriangles } from "./cubeMarch.ts";
+import { controls, MIN_SCALE } from "./controls.ts";
 
 new WebSocket(`ws://${location.host}/_reload`).onmessage = () => location.reload();
 
@@ -118,7 +119,8 @@ const torusSdf = (position: [number, number, number]) => {
 // VERTEX DATA
 let verts: number[] = [];
 let scale = 0;
-let oldScale = 0;
+let rampStartTime = 0;
+const RAMP_STEPS_PER_SEC = 20;
 let vertices = new Float32Array(verts);
 // END VERTEX DATA
 
@@ -295,9 +297,18 @@ const render = (deltaTime: number, elapsedTime: number) => {
     device.queue.writeBuffer(uniformBuffer, 144, new Float32Array([deltaTime / 1000, elapsedTime]));
 
     // UPDATE VERTEX BUFFER
-    scale = Math.min(4 + Math.floor((elapsedTime / 1000) * 20), 50);
-    if (oldScale !== scale) {
-        oldScale = scale;
+    // Ramp scale from MIN_SCALE up to the UI's max; restart the ramp when it changes.
+    if (controls.restart) {
+        controls.restart = false;
+        rampStartTime = elapsedTime;
+        scale = 0; // force a rebuild on the next comparison
+    }
+    const rampedScale = Math.min(
+        MIN_SCALE + Math.floor(((elapsedTime - rampStartTime) / 1000) * RAMP_STEPS_PER_SEC),
+        controls.maxScale,
+    );
+    if (rampedScale !== scale) {
+        scale = rampedScale;
         verts = [];
         pushTriangles(torusSdf, scale, verts);
         vertices = new Float32Array(verts);
