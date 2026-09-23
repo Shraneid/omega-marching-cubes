@@ -95,25 +95,6 @@ const vertexShader = await loadShaderModule("/shaders/vertex.wgsl");
 const fragmentShader = await loadShaderModule("/shaders/fragment.wgsl");
 // END LOAD SHADERS
 
-const length = (position: number[]) => {
-    let sum = 0;
-    for (const p of position) {
-        sum += p ** 2;
-    }
-    return Math.sqrt(sum);
-};
-
-const sphereSdf = (position: [number, number, number]) => {
-    const radius = 1;
-    return length(position) - radius;
-};
-
-const torusSdf = (position: [number, number, number]) => {
-    const t = [0.5, 0.25];
-    const q = [length([position[0], position[2]]) - t[0], position[1]];
-    return length(q) - t[1];
-};
-
 // VERTEX DATA
 let verts: number[] = [];
 let scale = 0;
@@ -308,7 +289,7 @@ const render = (deltaTime: number, elapsedTime: number) => {
     if (rampedScale !== scale) {
         scale = rampedScale;
         verts = [];
-        pushTriangles(torusSdf, scale, verts);
+        pushTriangles(controls.sdf, scale, verts);
         vertices = new Float32Array(verts);
 
         device.queue.writeBuffer(vertexBuffer, 0, vertices);
