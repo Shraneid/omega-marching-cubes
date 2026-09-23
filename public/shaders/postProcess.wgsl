@@ -20,5 +20,4 @@ fn fs(in: VertexOut) -> @location(0) vec4f {
 
     let color = textureSampleLevel(sceneTexture, texSampler, vec2(uv.x, -uv.y), 0.0);
     return color;
-//    return vec4(color.rgb, 1.0);
 }

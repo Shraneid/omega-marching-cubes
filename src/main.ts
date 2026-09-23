@@ -193,10 +193,6 @@ const renderPipeline = device.createRenderPipeline({
             },
         ],
     },
-    // primitive: {
-    //     topology: "triangle-list",
-    //     cullMode: "back",
-    // },
     depthStencil: {
         depthWriteEnabled: true,
         depthCompare: "less",
@@ -276,11 +272,10 @@ const render = (deltaTime: number, elapsedTime: number) => {
     device.queue.writeBuffer(uniformBuffer, 144, new Float32Array([deltaTime / 1000, elapsedTime]));
 
     // UPDATE VERTEX BUFFER
-    // Ramp scale from MIN_SCALE up to the UI's max; restart the ramp when it changes.
     if (controls.restart) {
         controls.restart = false;
         rampStartTime = elapsedTime;
-        scale = 0; // force a rebuild on the next comparison
+        scale = 0;
     }
     const rampedScale = Math.min(
         MIN_SCALE + Math.floor(((elapsedTime - rampStartTime) / 1000) * RAMP_STEPS_PER_SEC),
@@ -303,7 +298,6 @@ const render = (deltaTime: number, elapsedTime: number) => {
     renderPass.setBindGroup(0, renderBindGroup);
 
     renderPass.setVertexBuffer(0, vertexBuffer);
-    // renderPass.setIndexBuffer(indexBuffer, "uint16");
 
     renderPass.draw(vertices.length / 3);
     renderPass.end();
