@@ -312,7 +312,7 @@ const render = (deltaTime: number, elapsedTime: number) => {
     );
 
     // UPDATE VERTEX BUFFER
-    scale = Math.min(4 + Math.floor(elapsedTime / 1000 * 20), 150);
+    scale = Math.min(4 + Math.floor(elapsedTime / 1000 * 20), 50);
     verts = [];
     pushTriangles(torusSdf, scale, verts);
     vertices = new Float32Array(verts);
